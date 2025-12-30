@@ -15,7 +15,6 @@ f = 100:1:2*fc;   % Frequency range (Hz)
 % Bending stiffness
 B = E*h^3/(12*(1 - nu^2));   % Bending stiffness of the plate (N·m)
 
-STL_normal = zeros(size(f));     % Normal incidence (x = 0)
 STL_diffuse = zeros(size(f));    % Diffuse field (angular integration)
 
 for i = 1:length(f)
