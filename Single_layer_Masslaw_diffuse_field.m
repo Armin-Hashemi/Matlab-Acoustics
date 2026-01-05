@@ -1,3 +1,6 @@
+% Sound Transmission Loss with Mass law formula
+% All the information is available in The Tenth Sir Richard Fairey Memorial
+% Lecture: Sound Transmission in Buildings by M. Heckl.
 clear
 clc
 
@@ -16,12 +19,12 @@ for i = 1:length(f)
     w = 2*pi*f(i);
 
     % 1) Normal incidence (x = 0)
-    tau_normal = 1/(1 + (w*m/(2*c*rho))^2);
-    STL_normal(i) = 10*log10(1/tau_normal);
+    tau_normal = 1/(1 + (w*m/(2*c*rho))^2);   
+    STL_normal(i) = 10*log10(1/tau_normal);   % Equation (7)
 
     % 2) Diffuse field — Angular integration
     tau_diffuse = @(x) 1./(1 + (w*m*cos(x)./(2*c*rho)).^2);
-    sol = integral(@(x) tau_diffuse(x).*sin(2*x), 0, 78*pi/180);
+    sol = integral(@(x) tau_diffuse(x).*sin(2*x), 0, 78*pi/180);   % Equation (8)
     STL_diffuse(i) = 10*log10(1/sol);
 end
 

@@ -1,4 +1,6 @@
 % Sound Transmission Loss with Cremer formula
+% All the information is available in The Tenth Sir Richard Fairey Memorial
+% Lecture: Sound Transmission in Buildings by M. Heckl.
 clear
 clc
 
@@ -10,8 +12,8 @@ rho = 1.2;       % Air density (kg/m^3)
 nu  = 0.24;      % Poisson’s ratio of the panel material (-)
 c   = 343;       % Speed of sound in air (m/s)
 fc = 2079;       % Coincidence frequency (Hz)
-f = 100:1:2*fc;   % Frequency range (Hz)
-
+f = 50:1:2*fc;   % Frequency range (Hz)
+eta=0.024;        % Damping loss factor of glass (-)
 % Bending stiffness
 B = E*h^3/(12*(1 - nu^2));   % Bending stiffness of the plate (N·m)
 
@@ -21,15 +23,16 @@ for i = 1:length(f)
     w = 2*pi*f(i);  % Angular frequency (rad/s)
 
     % 1) Diffuse-field to 78 (angular integration)
-    tau_diffuse = @(theta) 1 ./ (1 + (m*w - B*w^3.*(sin(theta)/c).^4).^2 ...
-                                 .* (cos(theta)./(2*c*rho)).^2);
+    tau_diffuse = @(theta) 1 ./ ( (1 + (m*w - B*w^3.*(sin(theta)/c).^4).^2 ... 
+       + B^2*eta^2*w^6.*(sin(theta)/c).^8).* (cos(theta)./(2*c*rho)).^2 );
+
     sol = integral(@(theta) tau_diffuse(theta).*sin(2*theta), 0, 78*pi/180);
     STL_diffuse(i) = 10*log10(1/sol);
 
     % 2) Diffuse-field to 90 (angular integration)
-    tau_diffuse2 = @(theta) 1 ./ (1 + (m*w - B*w^3.*(sin(theta)/c).^4).^2 ...
-                                 .* (cos(theta)./(2*c*rho)).^2);
-    sol2 = integral(@(theta) tau_diffuse2(theta).*sin(2*theta), 0, 90*pi/180);
+    tau_diffuse2 = @(theta) 1 ./ ( (1 + (m*w - B*w^3.*(sin(theta)/c).^4).^2 ...
+       + B^2*eta^2*w^6.*(sin(theta)/c).^8).* (cos(theta)./(2*c*rho)).^2 );
+    sol2 = integral(@(theta) tau_diffuse2(theta).*sin(2*theta), 0, 89*pi/180);
     STL_diffuse2(i) = 10*log10(1/sol2);
 end
 
@@ -40,6 +43,6 @@ semilogx(f, STL_diffuse2, 'LineWidth', 1.5)     % Diffuse-field 90
 xlabel('Frequency (Hz)')
 ylabel('STL (dB)')
 title('Sound Transmission Loss (Cremer)')
-grid on
-axis([100 2*fc 5 50])
 legend('Diffuse field 78', 'Diffuse field 90')
+grid on
+axis([50 2*fc 5 50])
